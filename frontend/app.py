@@ -59,7 +59,7 @@ with tab1:
     if st.session_state.quick_research_results:
         st.markdown("**Recent Results:**")
         for idx, result in enumerate(st.session_state.quick_research_results):
-            with st.container(border=True):
+            with st.expander(f"📊 Result {idx+1}: {result['question'][:50]}...", expanded=True):
                 st.write(f"**Q:** {result['question']}")
                 st.info(f"**A:** {result['answer']}")
                 if result.get("papers"):
