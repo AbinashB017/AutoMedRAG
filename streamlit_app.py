@@ -6,6 +6,10 @@ import streamlit as st
 import requests
 import json
 
+# Initialize session state for mic recording
+if "mic_query" not in st.session_state:
+    st.session_state.mic_query = ""
+
 # Configuration
 API_BASE_URL = st.secrets.get("API_URL", "http://127.0.0.1:8000")
 API_ENDPOINT = f"{API_BASE_URL}/ask"
@@ -95,18 +99,64 @@ st.markdown("---")
 
 # Query input
 st.markdown("### 📋 Ask a Question")
-query = st.text_area(
-    "Enter your medical question or follow-up:",
-    placeholder="e.g., What are the latest treatments for type 2 diabetes?",
-    height=80,
-    key="query_input"
-)
+
+# Create two input methods
+input_tab1, input_tab2 = st.tabs(["⌨️ Type", "🎤 Voice"])
+
+with input_tab1:
+    query = st.text_area(
+        "Enter your medical question or follow-up:",
+        placeholder="e.g., What are the latest treatments for type 2 diabetes?",
+        height=80,
+        key="query_input"
+    )
+    use_text_query = query
+
+with input_tab2:
+    st.write("Click the microphone below to record your question:")
+    try:
+        from streamlit_mic_recorder import mic_recorder
+        audio = mic_recorder(
+            start_prompt="🎤 Start Recording",
+            stop_prompt="⏹️ Stop Recording",
+            just_once=False,
+            use_container_width=True,
+            format="wav"
+        )
+        
+        if audio is not None:
+            st.audio(audio["bytes"])
+            
+            # Convert audio to text
+            try:
+                import speech_recognition as sr
+                from io import BytesIO
+                
+                recognizer = sr.Recognizer()
+                audio_data = sr.AudioData(audio["bytes"], sample_rate=16000, sample_width=2)
+                
+                try:
+                    query = recognizer.recognize_google(audio_data)
+                    st.success(f"Recognized: **{query}**")
+                    use_text_query = query
+                except sr.UnknownValueError:
+                    st.error("Could not understand audio. Please try again.")
+                    use_text_query = ""
+                except sr.RequestError:
+                    st.error("Speech recognition service unavailable")
+                    use_text_query = ""
+            except ImportError:
+                st.warning("Speech recognition not available. Please use text input.")
+                use_text_query = ""
+    except ImportError:
+        st.info("💬 Mic recorder component not available. Using text input only.")
+        use_text_query = query
 
 col1, col2 = st.columns([1, 4])
 with col1:
     search_button = st.button("🔍 Search", use_container_width=True)
 
-if search_button and query:
+if search_button and use_text_query:
     with st.spinner("🔄 Searching medical literature..."):
         try:
             # Build history for context
@@ -119,7 +169,7 @@ if search_button and query:
             
             # Send query with history
             payload = {
-                "question": query,
+                "question": use_text_query,
                 "history": history
             }
             
@@ -135,7 +185,7 @@ if search_button and query:
                 # Add to chat history
                 st.session_state.messages.append({
                     "role": "user",
-                    "content": query
+                    "content": use_text_query
                 })
                 
                 st.session_state.messages.append({

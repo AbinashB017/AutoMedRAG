@@ -21,11 +21,14 @@ except ImportError:
 
 # Medical keyword synonyms for better matching
 MEDICAL_SYNONYMS = {
-    'pneumonia': ['pulmonary', 'lung', 'respiratory', 'bronc', 'chest'],
-    'diabetes': ['glucose', 'insulin', 'blood sugar', 'metabolic'],
-    'cancer': ['tumor', 'malignancy', 'oncology', 'carcinoma'],
-    'heart': ['cardiac', 'cardiovascular', 'myocardial', 'coronary'],
-    'infection': ['bacterial', 'viral', 'sepsis', 'inflammatory'],
+    'pneumonia': ['pulmonary', 'lung', 'respiratory', 'bronc', 'chest', 'pneumon'],
+    'diabetes': ['glucose', 'insulin', 'blood', 'sugar', 'metabolic', 'diabetic', 'hyperglycemia'],
+    'cancer': ['tumor', 'malignancy', 'oncology', 'carcinoma', 'cancer', 'neoplasm'],
+    'hiv': ['hiv', 'aids', 'immunodeficiency', 'antiretroviral', 'arv', 'retroviral'],
+    'heart': ['cardiac', 'cardiovascular', 'myocardial', 'coronary', 'heart', 'cardiov'],
+    'infection': ['bacterial', 'viral', 'sepsis', 'inflammatory', 'infection', 'infect'],
+    'covid': ['covid', 'coronavirus', 'sars-cov', 'pandemic', 'respiratory'],
+    'hypertension': ['hypertension', 'blood', 'pressure', 'bp', 'hypertensive'],
 }
 
 def _clean_text(text):
@@ -42,24 +45,38 @@ def _clean_text(text):
 def _calculate_relevance_score(query_words, title_words, abstract_words):
     """
     Calculate relevance score with title weighting and synonym matching.
-    Higher weight for title matches, lower for abstract.
+    STRICT: Requires keyword presence in title.
     """
     score = 0.0
     
-    # Title matching (weight: 2.0)
+    # Check if ANY query word is in title (strict requirement)
+    has_title_match = len(set(query_words) & set(title_words)) > 0
+    if not has_title_match:
+        # Check if any synonyms of query words are in title
+        has_synonym_match = False
+        for query_word in query_words:
+            if query_word in MEDICAL_SYNONYMS:
+                synonyms = MEDICAL_SYNONYMS[query_word]
+                if len(set(synonyms) & set(title_words)) > 0:
+                    has_synonym_match = True
+                    break
+        if not has_synonym_match:
+            return 0.0  # REJECT: No keyword in title at all
+    
+    # Title matching (weight: 3.0) - strong signal
     title_matches = len(set(query_words) & set(title_words))
-    score += title_matches * 2.0
+    score += title_matches * 3.0
     
     # Abstract matching (weight: 1.0)
     abstract_matches = len(set(query_words) & set(abstract_words))
     score += abstract_matches * 1.0
     
-    # Synonym matching (weight: 0.5)
+    # Synonym matching (weight: 1.5)
     for query_word in query_words:
         if query_word in MEDICAL_SYNONYMS:
             synonyms = MEDICAL_SYNONYMS[query_word]
             synonym_matches = len(set(synonyms) & set(title_words + abstract_words))
-            score += synonym_matches * 0.5
+            score += synonym_matches * 1.5
     
     # Normalize by query length
     if len(query_words) > 0:
@@ -142,18 +159,21 @@ def hybrid_retrieve(query, papers, top_k=10):
     
     # Filter by minimum relevance threshold using pure Python
     max_score = max(scores) if scores else 0
-    min_threshold = max_score * 0.1  # At least 10% of max score
+    min_threshold = max(max_score * 0.3, 0.5)  # At least 30% of max OR 0.5 (whichever is higher)
     
     # Get indices of papers above threshold, sorted by score (pure Python)
     scored_with_index = [(score, i) for i, score in enumerate(scores)]
     scored_with_index.sort(reverse=True)
-    ranked_indices = [i for score, i in scored_with_index]
+    ranked_indices = [i for score, i in scored_with_index if score >= min_threshold]
+    
+    # Ensure we have results - if threshold is too strict, relax it
+    if len(ranked_indices) == 0:
+        ranked_indices = [i for score, i in scored_with_index][:top_k]
     
     ranked_papers = []
     for i in ranked_indices[:top_k]:
-        if scores[i] >= min_threshold or len(ranked_papers) == 0:
-            paper = papers[int(i)].copy()
-            paper["hybrid_score"] = float(scores[int(i)])
-            ranked_papers.append(paper)
+        paper = papers[int(i)].copy()
+        paper["hybrid_score"] = float(scores[i])
+        ranked_papers.append(paper)
     
     return ranked_papers
