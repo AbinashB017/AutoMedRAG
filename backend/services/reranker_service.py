@@ -1,5 +1,3 @@
-import numpy as np
-
 # Try to import ML packages with fallback
 try:
     from sentence_transformers import CrossEncoder

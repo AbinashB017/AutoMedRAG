@@ -1,14 +1,15 @@
-import numpy as np
 import re
 from collections import Counter
 
 # Try to import ML packages with fallback
 try:
+    import numpy as np
     import faiss
     from rank_bm25 import BM25Okapi
     HAS_ML_PACKAGES = True
 except ImportError:
     HAS_ML_PACKAGES = False
+    np = None
 
 try:
     from sentence_transformers import SentenceTransformer
@@ -84,16 +85,22 @@ def hybrid_retrieve(query, papers, top_k=10):
             doc_embeddings = embed_model.encode(abstracts)
             query_embedding = embed_model.encode([query])
 
-            dimension = doc_embeddings.shape[1]
+            dimension = len(doc_embeddings[0]) if doc_embeddings else 768
             index = faiss.IndexFlatL2(dimension)
-            index.add(np.array(doc_embeddings))
+            
+            # Convert to numpy arrays for FAISS
+            doc_array = np.array(doc_embeddings, dtype=np.float32)
+            query_array = np.array([query_embedding[0]], dtype=np.float32)
+            
+            index.add(doc_array)
 
-            D, I = index.search(np.array(query_embedding), len(abstracts))
+            D, I = index.search(query_array, len(abstracts))
             dense_scores = 1 / (1 + D[0])
 
             tokenized = [doc.split() for doc in abstracts]
             bm25 = BM25Okapi(tokenized)
             bm25_scores = bm25.get_scores(query.split())
+            bm25_scores = np.array(bm25_scores, dtype=np.float32)
 
             dense_scores = dense_scores / (np.max(dense_scores) + 1e-8)
             bm25_scores = bm25_scores / (np.max(bm25_scores) + 1e-8)
@@ -133,13 +140,14 @@ def hybrid_retrieve(query, papers, top_k=10):
         score = _calculate_relevance_score(query_words, title_words, abstract_words)
         scores.append(score)
     
-    scores = np.array(scores)
+    # Filter by minimum relevance threshold using pure Python
+    max_score = max(scores) if scores else 0
+    min_threshold = max_score * 0.1  # At least 10% of max score
     
-    # Filter by minimum relevance threshold
-    min_threshold = np.max(scores) * 0.1  # At least 10% of max score
-    
-    # Get indices of papers above threshold, sorted by score
-    ranked_indices = np.argsort(scores)[::-1]
+    # Get indices of papers above threshold, sorted by score (pure Python)
+    scored_with_index = [(score, i) for i, score in enumerate(scores)]
+    scored_with_index.sort(reverse=True)
+    ranked_indices = [i for score, i in scored_with_index]
     
     ranked_papers = []
     for i in ranked_indices[:top_k]:
