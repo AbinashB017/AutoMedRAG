@@ -62,88 +62,59 @@ def _get_mock_papers(query: str):
     """Return mock papers for demonstration/testing purposes"""
     mock_data = {
         "diabetes": [
-            {
-                "title": "Novel Therapeutic Approaches for Type 2 Diabetes Management",
-                "abstract": "Recent advances in diabetes treatment include GLP-1 receptor agonists and SGLT2 inhibitors. These medications have shown significant benefits in glycemic control and cardiovascular protection. This review discusses the latest clinical evidence for combination therapy approaches in type 2 diabetes management."
-            },
-            {
-                "title": "Metformin: The Gold Standard in First-Line Therapy for Diabetes",
-                "abstract": "Metformin remains the most commonly prescribed medication for type 2 diabetes. Its mechanism of action involves increasing insulin sensitivity and reducing hepatic glucose production. The drug has excellent long-term safety profile with minimal risk of hypoglycemia."
-            },
-            {
-                "title": "Lifestyle Interventions and Prevention of Type 2 Diabetes",
-                "abstract": "Comprehensive lifestyle modifications including diet, exercise, and weight loss can prevent or delay the onset of type 2 diabetes. The Diabetes Prevention Program demonstrated that lifestyle intervention reduced diabetes incidence by 58% over 3 years."
-            },
-            {
-                "title": "Insulin Resistance and Metabolic Syndrome in Diabetes",
-                "abstract": "Insulin resistance is a key pathophysiological feature of type 2 diabetes. Understanding the underlying mechanisms of insulin resistance helps guide therapeutic interventions and patient management strategies."
-            }
+            {"title": "Type 2 Diabetes Management and Metabolic Control", "abstract": "Recent advances in diabetes treatment include GLP-1 receptor agonists and SGLT2 inhibitors. These medications have shown significant benefits in glycemic control and cardiovascular protection."},
+            {"title": "Insulin Resistance and Metformin Therapy", "abstract": "Metformin remains the most commonly prescribed medication for type 2 diabetes. Its mechanism involves increasing insulin sensitivity and reducing hepatic glucose production."},
+            {"title": "Lifestyle Interventions in Diabetes Prevention", "abstract": "Comprehensive lifestyle modifications can prevent or delay the onset of type 2 diabetes by 58% over 3 years according to the Diabetes Prevention Program."}
         ],
         "hiv": [
-            {
-                "title": "Antiretroviral Therapy and HIV Viral Suppression",
-                "abstract": "Modern antiretroviral therapy (ART) with integrase inhibitors and protease inhibitors can achieve undetectable viral loads in most HIV patients. Undetectable equals untransmittable (U=U) is now well-established in clinical practice."
-            },
-            {
-                "title": "HIV Prevention with Pre-Exposure Prophylaxis (PrEP)",
-                "abstract": "Pre-exposure prophylaxis (PrEP) with tenofovir/emtricitabine shows >90% efficacy in preventing HIV transmission when taken consistently. PrEP is now recommended for high-risk populations globally."
-            },
-            {
-                "title": "Long-Acting Antiretroviral Agents for HIV Treatment",
-                "abstract": "Long-acting formulations of HIV drugs administered monthly or every two months improve treatment adherence and patient satisfaction. These agents represent a paradigm shift in HIV treatment strategies."
-            },
-            {
-                "title": "Immune Reconstitution in HIV/AIDS Patients",
-                "abstract": "CD4 count recovery and immune reconstitution inflammatory syndrome (IRIS) are important considerations in HIV management. Guidelines recommend starting ART regardless of CD4 count for all HIV-positive individuals."
-            }
-        ],
-        "cancer": [
-            {
-                "title": "Immunotherapy Revolution in Oncology and Cancer Treatment",
-                "abstract": "Checkpoint inhibitors and CAR-T cell therapies have transformed cancer treatment outcomes. Recent clinical trials show response rates of 30-50% in previously difficult-to-treat cancers."
-            },
-            {
-                "title": "Precision Medicine Approaches in Cancer Oncology",
-                "abstract": "Genomic profiling enables targeted cancer therapy based on tumor genetics. Personalized treatments show improved efficacy and reduced side effects compared to standard chemotherapy."
-            },
-            {
-                "title": "Combination Chemotherapy in Advanced Cancers",
-                "abstract": "Multi-agent chemotherapy regimens provide synergistic effects in cancer treatment. Clinical trials demonstrate improved overall survival with combination approaches in various cancer types."
-            }
-        ],
-        "hypertension": [
-            {
-                "title": "Blood Pressure Management in Hypertension: Modern Guidelines",
-                "abstract": "Current guidelines emphasize individualized blood pressure targets based on patient risk profiles. ACE inhibitors and ARBs remain first-line agents for hypertension management and cardiovascular protection."
-            },
-            {
-                "title": "Combined Antihypertensive Therapy: A Systematic Review",
-                "abstract": "Combination therapy with two or more hypertension agents is often required to achieve target blood pressure. Studies show improved outcomes with fixed-dose combinations in resistant hypertension."
-            },
-            {
-                "title": "Lifestyle Modifications in Hypertension Management",
-                "abstract": "Dietary sodium reduction, weight loss, and regular exercise can lower blood pressure significantly. Non-pharmacological interventions should be the first-line approach in hypertension management."
-            }
-        ],
-        "covid": [
-            {
-                "title": "COVID-19 Vaccines and Pandemic Prevention",
-                "abstract": "mRNA vaccines developed for COVID-19 show >95% efficacy against severe disease. Vaccination campaigns have reduced hospitalizations and mortality worldwide."
-            },
-            {
-                "title": "Long COVID and Post-Viral Syndromes",
-                "abstract": "Approximately 10-30% of COVID-19 patients experience long-term symptoms including fatigue, dyspnea, and cognitive dysfunction. The pathophysiology of long COVID remains under investigation."
-            }
+            {"title": "Antiretroviral Therapy Advances in HIV Treatment", "abstract": "Modern antiretroviral therapy (ART) with integrase inhibitors can achieve undetectable viral loads. U=U (Undetectable equals Untransmittable) is well-established in clinical practice."},
+            {"title": "Pre-Exposure Prophylaxis (PrEP) for HIV Prevention", "abstract": "PrEP with tenofovir/emtricitabine shows >90% efficacy in preventing HIV transmission when taken consistently for high-risk populations."},
+            {"title": "Long-Acting HIV Drugs and Treatment Adherence", "abstract": "Long-acting formulations of HIV medications administered monthly improve treatment adherence and patient satisfaction rates significantly."}
         ],
         "pneumonia": [
-            {
-                "title": "Bacterial and Community-Acquired Pneumonia Treatment",
-                "abstract": "Community-acquired pneumonia remains a leading cause of infectious disease mortality. Empirical antibiotic therapy based on severity and risk factors provides optimal outcomes."
-            },
-            {
-                "title": "Respiratory Support in Severe Pneumonia",
-                "abstract": "Mechanically ventilated patients with pneumonia require lung-protective ventilation strategies. Early recognition of ARDS is crucial for improved survival rates."
-            }
+            {"title": "Community-Acquired Pneumonia Treatment Guidelines", "abstract": "Community-acquired pneumonia remains a leading cause of infectious disease mortality. Empirical antibiotic therapy based on severity provides optimal outcomes."},
+            {"title": "Respiratory Support in Severe Pneumonia", "abstract": "Mechanically ventilated patients with pneumonia require lung-protective ventilation strategies. Early recognition of ARDS is crucial for improved survival."},
+            {"title": "Viral vs Bacterial Pneumonia Management", "abstract": "Distinguishing between viral and bacterial pneumonia helps guide appropriate antimicrobial therapy and reduces unnecessary antibiotic use."}
+        ],
+        "spondylitis": [
+            {"title": "Ankylosing Spondylitis and Spinal Inflammation", "abstract": "Ankylosing spondylitis is a chronic inflammatory disease affecting the spine and joints. TNF inhibitors have revolutionized treatment outcomes for spondylitis patients."},
+            {"title": "Biological Therapies in Spondyloarthritis Management", "abstract": "TNF-alpha inhibitors and IL-17 inhibitors show significant efficacy in reducing inflammation and improving mobility in ankylosing spondylitis."},
+            {"title": "Physiotherapy and Exercise in Ankylosing Spondylitis", "abstract": "Regular physical therapy and specific exercises help maintain spinal mobility and reduce pain in spondylitis patients."}
+        ],
+        "arthritis": [
+            {"title": "Rheumatoid Arthritis: Biologic Disease-Modifying Therapies", "abstract": "Disease-modifying antirheumatic drugs (DMARDs) and biologic agents have transformed rheumatoid arthritis outcomes. Early intervention improves long-term prognosis."},
+            {"title": "Osteoarthritis Management and Joint Preservation", "abstract": "Osteoarthritis treatment includes pharmacological and non-pharmacological approaches. Weight loss and exercise are fundamental non-drug interventions."},
+            {"title": "Anti-TNF Therapies in Rheumatoid Arthritis", "abstract": "TNF inhibitors significantly reduce joint inflammation and slow disease progression in rheumatoid arthritis patients."}
+        ],
+        "asthma": [
+            {"title": "Asthma Control and Inhaled Corticosteroid Therapy", "abstract": "Inhaled corticosteroids remain the gold standard for asthma management. Regular controller therapy prevents acute exacerbations."},
+            {"title": "Severe Asthma and Biologic Therapeutics", "abstract": "Monoclonal antibodies targeting IL-5, IgE, and IL-4 receptors have improved outcomes in severe asthma phenotypes."},
+            {"title": "Asthma Action Plans and Patient Education", "abstract": "Written asthma action plans and patient education improve medication adherence and reduce emergency department visits."}
+        ],
+        "cancer": [
+            {"title": "Immunotherapy Revolution in Oncology", "abstract": "Checkpoint inhibitors and CAR-T cell therapies have transformed cancer treatment. Response rates of 30-50% in previously difficult-to-treat cancers."},
+            {"title": "Precision Oncology and Genomic Profiling", "abstract": "Genomic profiling enables targeted cancer therapy based on tumor genetics. Personalized treatments show improved efficacy and reduced side effects."},
+            {"title": "Combination Chemotherapy in Advanced Cancers", "abstract": "Multi-agent chemotherapy regimens provide synergistic effects. Clinical trials demonstrate improved overall survival with combination approaches."}
+        ],
+        "hypertension": [
+            {"title": "Blood Pressure Management and Antihypertensive Agents", "abstract": "Current guidelines emphasize individualized blood pressure targets. ACE inhibitors and ARBs remain first-line agents for cardiovascular protection."},
+            {"title": "Resistant Hypertension and Combination Therapy", "abstract": "Combination therapy with two or more antihypertensive agents is required for resistant hypertension. Fixed-dose combinations improve adherence."},
+            {"title": "Lifestyle Modifications in Hypertension Control", "abstract": "Dietary sodium reduction, weight loss, and regular exercise significantly lower blood pressure and reduce cardiovascular risk."}
+        ],
+        "covid": [
+            {"title": "COVID-19 mRNA Vaccines and Pandemic Prevention", "abstract": "mRNA vaccines show >95% efficacy against severe COVID-19 disease. Vaccination campaigns have reduced hospitalizations worldwide."},
+            {"title": "Post-COVID Syndrome and Long-Term Complications", "abstract": "Approximately 10-30% of COVID-19 patients experience prolonged symptoms. Long COVID impacts multiple organ systems."},
+            {"title": "SARS-CoV-2 Antiviral Treatments and Therapeutics", "abstract": "Monoclonal antibodies and oral antivirals reduce severe COVID-19 outcomes when used early in infection."}
+        ],
+        "kidney": [
+            {"title": "Chronic Kidney Disease and Renal Function Preservation", "abstract": "ACE inhibitors and SGLT2 inhibitors slow CKD progression. Early intervention can preserve remaining renal function."},
+            {"title": "Glomerulonephritis and Kidney Inflammation", "abstract": "Immunosuppressive therapy is essential in rapidly progressive glomerulonephritis. Early diagnosis and treatment prevent progression to ESRD."},
+            {"title": "Dialysis and Renal Replacement Therapy Management", "abstract": "Hemodialysis and peritoneal dialysis maintain fluid and electrolyte balance in end-stage renal disease patients."}
+        ],
+        "gout": [
+            {"title": "Acute Gout Attack Management and NSAIDs", "abstract": "Acute gout is treated with NSAIDs, colchicine, or corticosteroids. Rapid inflammation reduction prevents chronic complications."},
+            {"title": "Uric Acid Lowering Therapy in Gout Prophylaxis", "abstract": "Allopurinol and febuxostat reduce serum uric acid levels. Xanthine oxidase inhibitors prevent recurrent gout attacks."},
+            {"title": "Purine-Restricted Diets and Lifestyle Modifications", "abstract": "Limiting purine-rich foods and alcohol reduces uric acid production. Weight loss and hydration improve gout outcomes."}
         ]
     }
     
@@ -153,5 +124,9 @@ def _get_mock_papers(query: str):
         if keyword in query_lower:
             return papers[:3]
     
-    # If no exact match, don't return random data - return empty or generic
-    return []
+    # If no exact match, search in content
+    for keyword, papers in mock_data.items():
+        if any(word in query_lower for word in keyword.split()):
+            return papers[:3]
+    
+    # Return empty if no match - don't return random data
