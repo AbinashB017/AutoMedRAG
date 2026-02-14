@@ -59,14 +59,14 @@ with tab1:
     if st.session_state.quick_research_results:
         st.markdown("**Recent Results:**")
         for idx, result in enumerate(st.session_state.quick_research_results):
-            with st.expander(f"📊 Result {idx+1}: {result['question'][:50]}...", expanded=True):
-                st.write(f"**Q:** {result['question']}")
-                st.info(f"**A:** {result['answer']}")
-                if result.get("papers"):
-                    with st.expander(f"📚 {len(result['papers'])} papers found", expanded=False):
-                        for paper_idx, paper in enumerate(result["papers"], 1):
-                            st.write(f"**{paper_idx}. {paper['title']}**")
-                            st.caption(f"{paper['abstract'][:200]}...")
+            st.markdown(f"**Q:** {result['question']}")
+            st.info(f"**A:** {result['answer']}")
+            if result.get("papers"):
+                with st.expander(f"📚 {len(result['papers'])} papers found", expanded=False):
+                    for paper_idx, paper in enumerate(result["papers"], 1):
+                        st.write(f"**{paper_idx}. {paper['title']}**")
+                        st.caption(f"{paper['abstract'][:200]}...")
+            st.divider()
         st.markdown("---")
     
     query = st.text_area(
