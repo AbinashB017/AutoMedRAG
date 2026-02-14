@@ -1,10 +1,12 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
-from backend.models.schemas import QueryRequest, QueryResponse
+from backend.models.schemas import QueryRequest, QueryResponse, ReportSummaryResponse, ReportQuestionRequest, ReportQuestionResponse, ReportExplanationRequest, ReportExplanationResponse
 from backend.services.pubmed_service import fetch_pubmed
 from backend.services.retrieval_service import hybrid_retrieve
 from backend.services.reranker_service import rerank
 from backend.services.llm_service import generate_answer
+from backend.services.report_parser_service import extract_report_text, extract_key_sections
+from backend.services.report_summarizer_service import summarize_report, answer_report_question, explain_medical_term
 
 app = FastAPI(title="AutoMedRAG API", description="Medical Document Retrieval and Analysis System")
 
@@ -85,5 +87,79 @@ async def ask_question(request: QueryRequest):
         return QueryResponse(
             answer=f"Error processing query: {str(e)}",
             papers=[]
+        )
+
+
+# Report-related endpoints
+@app.post("/summarize-report")
+async def summarize_medical_report(file: UploadFile = File(...)):
+    """
+    Upload a medical report and get AI-powered summary.
+    Supports: PDF, DOCX, TXT
+    """
+    try:
+        # Read file content
+        content = await file.read()
+        
+        # Extract text from report
+        report_text = extract_report_text(content, file.filename)
+        
+        # Summarize the report
+        summary_result = summarize_report(report_text)
+        
+        # Extract key sections
+        key_sections = extract_key_sections(report_text)
+        
+        return {
+            "filename": file.filename,
+            "summary": summary_result["summary"],
+            "key_sections": key_sections,
+            "report_text": report_text,  # Include the extracted text
+            "status": "success"
+        }
+    except Exception as e:
+        return {
+            "error": str(e),
+            "status": "error"
+        }
+
+
+@app.post("/report-question", response_model=ReportQuestionResponse)
+async def ask_question_about_report(request: ReportQuestionRequest):
+    """
+    Ask a question about a medical report.
+    The AI will answer based on the report content.
+    """
+    try:
+        answer = answer_report_question(request.report_text, request.question)
+        
+        return ReportQuestionResponse(
+            question=request.question,
+            answer=answer
+        )
+    except Exception as e:
+        return ReportQuestionResponse(
+            question=request.question,
+            answer=f"Error answering question: {str(e)}"
+        )
+
+
+@app.post("/explain-term", response_model=ReportExplanationResponse)
+async def explain_medical_term_endpoint(request: ReportExplanationRequest):
+    """
+    Get an explanation of a medical term found in the report.
+    Provides patient-friendly language.
+    """
+    try:
+        explanation = explain_medical_term(request.report_text, request.term)
+        
+        return ReportExplanationResponse(
+            term=request.term,
+            explanation=explanation
+        )
+    except Exception as e:
+        return ReportExplanationResponse(
+            term=request.term,
+            explanation=f"Error explaining term: {str(e)}"
         )
 

@@ -115,6 +115,56 @@ def _get_mock_papers(query: str):
             {"title": "Acute Gout Attack Management and NSAIDs", "abstract": "Acute gout is treated with NSAIDs, colchicine, or corticosteroids. Rapid inflammation reduction prevents chronic complications."},
             {"title": "Uric Acid Lowering Therapy in Gout Prophylaxis", "abstract": "Allopurinol and febuxostat reduce serum uric acid levels. Xanthine oxidase inhibitors prevent recurrent gout attacks."},
             {"title": "Purine-Restricted Diets and Lifestyle Modifications", "abstract": "Limiting purine-rich foods and alcohol reduces uric acid production. Weight loss and hydration improve gout outcomes."}
+        ],
+        "alzheimer": [
+            {"title": "Amyloid and Tau Pathology in Alzheimer's Disease", "abstract": "Alzheimer's disease involves accumulation of amyloid-beta plaques and tau tangles. Recent anti-amyloid monoclonal antibodies show promise in slowing cognitive decline in early stages."},
+            {"title": "Cognitive Decline Prevention and Lifestyle Interventions", "abstract": "Mediterranean diet, cognitive training, and physical exercise reduce Alzheimer's risk by up to 30%. Sleep quality and social engagement also play crucial roles."},
+            {"title": "Biomarkers and Early Detection of Neurodegenerative Disease", "abstract": "Plasma phosphorylated tau and amyloid-beta ratios enable early detection decades before symptom onset. Precision medicine approaches personalize treatment strategies."}
+        ],
+        "heart": [
+            {"title": "Coronary Artery Disease and Stent Interventions", "abstract": "Percutaneous coronary intervention (PCI) with bare-metal or drug-eluting stents treats acute coronary syndromes. Dual antiplatelet therapy reduces thrombotic complications."},
+            {"title": "Heart Failure Management with SGLT2 Inhibitors", "abstract": "SGLT2 inhibitors reduce hospitalizations and mortality in heart failure with reduced ejection fraction. Benefits extend across diabetic and non-diabetic populations."},
+            {"title": "Cardiovascular Risk Stratification and Prevention", "abstract": "Risk calculators incorporating lipid profiles, blood pressure, and inflammatory markers guide preventive strategies. Statins and ACE inhibitors remain cornerstone therapies."}
+        ],
+        "stroke": [
+            {"title": "Acute Ischemic Stroke Thrombolysis and Thrombectomy", "abstract": "Intravenous thrombolysis and mechanical thrombectomy restore cerebral blood flow. Time-is-brain principle emphasizes rapid intervention within critical windows."},
+            {"title": "Stroke Prevention in Atrial Fibrillation", "abstract": "Anticoagulation with DOACs reduces stroke risk by 65% in atrial fibrillation patients. Left atrial appendage closure offers alternative for anticoagulation-intolerant patients."},
+            {"title": "Neuroplasticity and Rehabilitation after Stroke", "abstract": "Intensive physical therapy and constraint-induced movement therapy promote neuroplastic recovery. Speech and occupational therapy improve functional outcomes post-stroke."}
+        ],
+        "depression": [
+            {"title": "Antidepressant Efficacy and Selective Serotonin Reuptake Inhibitors", "abstract": "SSRIs remain first-line pharmacotherapy for major depressive disorder. Response rates reach 60-70% with adequate dosing and treatment duration."},
+            {"title": "Psychotherapy and Cognitive Behavioral Therapy Outcomes", "abstract": "Cognitive behavioral therapy shows efficacy comparable to antidepressants. Combination therapy of medication and psychotherapy provides superior outcomes."},
+            {"title": "Treatment-Resistant Depression and Ketamine", "abstract": "Esketamine nasal spray provides rapid symptom improvement in treatment-resistant depression. Neuroplasticity changes occur within hours of administration."}
+        ],
+        "obesity": [
+            {"title": "GLP-1 Receptor Agonists for Weight Management", "abstract": "Semaglutide and tirzepatide produce 15-20% weight loss in obese patients. Cardiovascular benefits extend beyond weight reduction with improved metabolic parameters."},
+            {"title": "Bariatric Surgery and Metabolic Outcomes", "abstract": "Gastric bypass and sleeve gastrectomy produce sustained weight loss and remission of type 2 diabetes. Long-term nutritional monitoring prevents deficiency states."},
+            {"title": "Childhood Obesity Prevention and Family Interventions", "abstract": "Early lifestyle interventions during childhood prevent obesity trajectory. Parental involvement and school-based programs show 20-30% weight reduction rates."}
+        ],
+        "hepatitis": [
+            {"title": "Direct-Acting Antivirals in Hepatitis C Treatment", "abstract": "Sofosbuvir-based regimens achieve cure rates >95% in hepatitis C. Treatment duration of 8-12 weeks eliminates viral replication across genotypes."},
+            {"title": "Hepatitis B Immunization and Viral Suppression", "abstract": "Hepatitis B vaccines prevent infection in 95% of recipients. Antiviral agents like tenofovir or entecavir suppress viral replication and prevent cirrhosis."},
+            {"title": "Cirrhosis Prevention and Liver Function Preservation", "abstract": "Early treatment of hepatitis prevents progression to cirrhosis. Screening for hepatocellular carcinoma using ultrasound and AFP improves detection at early stages."}
+        ],
+        "crohns": [
+            {"title": "Inflammatory Bowel Disease and TNF Inhibitor Therapy", "abstract": "Infliximab and adalimumab induce remission in 60-70% of Crohn's disease patients. TNF inhibitors reduce hospitalizations and surgery requirements significantly."},
+            {"title": "Vedolizumab and Gut-Specific Integrin Blockade", "abstract": "Vedolizumab selectively targets gut immune cells with minimal systemic immunosuppression. Efficacy in Crohn's disease reaches 50-60% at 6 weeks."},
+            {"title": "Nutritional Management in Inflammatory Bowel Disease", "abstract": "Exclusive enteral nutrition achieves remission rates comparable to corticosteroids. Anti-inflammatory diets reduce flare frequency and improve quality of life."}
+        ],
+        "thyroid": [
+            {"title": "Hypothyroidism Management and Levothyroxine Replacement", "abstract": "Levothyroxine monotherapy treats most hypothyroidism cases effectively. TSH-suppressive therapy prevents thyroid cancer recurrence after total thyroidectomy."},
+            {"title": "Graves' Disease and Hyperthyroidism Treatment", "abstract": "Antithyroid medications, beta-blockers, and radioiodine therapy manage Graves' disease. Thyroid-stimulating immunoglobulin monitoring guides treatment decisions."},
+            {"title": "Thyroid Cancer Screening and Radioactive Iodine Ablation", "abstract": "Thyroid ultrasound and fine-needle aspiration biopsy diagnose thyroid malignancies. Radioactive iodine ablation treats differentiated thyroid cancer with excellent survival rates."}
+        ],
+        "lupus": [
+            {"title": "Systemic Lupus Erythematosus and Antimalarial Drugs", "abstract": "Hydroxychloroquine prevents lupus flares and reduces cumulative organ damage. Long-term use decreases mortality by 50% and prevents thrombosis."},
+            {"title": "Immunosuppressive Therapy in lupus nephritis", "abstract": "Cyclophosphamide or mycophenolate mofetil preserve renal function in lupus nephritis. Combined therapy with corticosteroids achieves remission in 70-80% of patients."},
+            {"title": "Lupus Anticoagulant and Thrombotic Manifestations", "abstract": "Antiphospholipid antibodies increase thrombotic risk in lupus. Anticoagulation with warfarin or DOACs prevents recurrent thrombosis in antiphospholipid syndrome."}
+        ],
+        "parkinson": [
+            {"title": "Dopamine Replacement Therapy in Parkinson's Disease", "abstract": "Levodopa with carbidopa remains gold standard for motor symptom management. Extended-release formulations provide continuous dopaminergic stimulation."},
+            {"title": "Deep Brain Stimulation for Advanced Parkinson's Disease", "abstract": "DBS reduces motor complications and improves quality of life in advanced Parkinson's. Subthalamic nucleus stimulation decreases dyskinesia by 60-70%."},
+            {"title": "Neuroprotective Strategies and Disease Modification", "abstract": "MAO-B inhibitors and GLP-1 agonists show potential neuroprotective effects. Experimental therapies targeting alpha-synuclein aggregation are in advanced trials."}
         ]
     }
     
