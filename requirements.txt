@@ -6,18 +6,16 @@ pydantic==2.5.0
 # Frontend
 streamlit==1.28.1
 
-# Embeddings & Retrieval
-sentence-transformers==2.2.2
-faiss-cpu>=1.9.0
-rank-bm25==0.2.2
-
-# LLM & NLP
-transformers==4.36.2
-langchain-nvidia-ai-endpoints>=0.0.7
-langchain-core>=0.1.20
-
 # Utilities
 requests==2.31.0
-numpy>=1.24.3
 lxml==4.9.3
 python-dotenv==1.0.0
+
+# Optional ML (for better performance, but not required)
+# sentence-transformers==2.2.2
+# faiss-cpu>=1.9.0
+# rank-bm25==0.2.2
+# transformers==4.36.2
+# langchain-nvidia-ai-endpoints>=0.0.7
+# langchain-core>=0.1.20
+
