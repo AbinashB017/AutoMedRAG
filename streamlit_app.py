@@ -80,17 +80,36 @@ st.write(f"**Debug:** {len(st.session_state.messages)} messages in history")
 # Display chat history
 if st.session_state.messages:
     st.markdown("### 💬 Conversation History")
-    for message in st.session_state.messages:
+    for idx, message in enumerate(st.session_state.messages):
         if message["role"] == "user":
             with st.chat_message("user", avatar="🧑‍⚕️"):
                 st.write(f"**Q:** {message['content']}")
         else:
             with st.chat_message("assistant", avatar="🤖"):
                 st.write(f"**A:** {message['answer']}")
+                
+                # Add read-aloud button
+                col_speak, col_papers = st.columns([1, 3])
+                with col_speak:
+                    if st.button(f"🔊 Read Aloud", key=f"speak_{idx}"):
+                        try:
+                            from gtts import gTTS
+                            import io
+                            
+                            # Create speech
+                            tts = gTTS(message['answer'], lang='en', slow=False)
+                            audio_buffer = io.BytesIO()
+                            tts.write_to_fp(audio_buffer)
+                            audio_buffer.seek(0)
+                            
+                            st.audio(audio_buffer, format="audio/mp3")
+                        except Exception as e:
+                            st.error(f"Could not generate speech: {e}")
+                
                 if message.get("papers"):
                     with st.expander(f"📚 Papers ({len(message['papers'])} found)"):
-                        for idx, paper in enumerate(message["papers"], 1):
-                            st.write(f"**{idx}. {paper['title']}**")
+                        for paper_idx, paper in enumerate(message["papers"], 1):
+                            st.write(f"**{paper_idx}. {paper['title']}**")
                             st.caption(paper['abstract'][:200] + "...")
 else:
     st.info("💭 No conversation history yet. Ask a question to start!")
@@ -99,55 +118,13 @@ st.markdown("---")
 
 # Query input
 st.markdown("### 📋 Ask a Question")
-
-# Use two columns for text input and alternatives
-col_input, col_audio = st.columns([3, 1])
-
-with col_input:
-    query = st.text_area(
-        "Enter your medical question or follow-up:",
-        placeholder="e.g., What are the latest treatments for type 2 diabetes?",
-        height=80,
-        key="query_input"
-    )
-    use_text_query = query
-
-with col_audio:
-    st.write("**Or upload audio:**")
-    audio_file = st.file_uploader(
-        "Upload WAV/MP3 file",
-        type=["wav", "mp3", "m4a"],
-        label_visibility="collapsed"
-    )
-    
-    if audio_file is not None:
-        try:
-            import speech_recognition as sr
-            from io import BytesIO
-            
-            recognizer = sr.Recognizer()
-            
-            # Read audio file
-            audio_bytes = audio_file.read()
-            
-            # Convert to speech
-            try:
-                audio_data = sr.AudioData(audio_bytes, sample_rate=16000, sample_width=2)
-                recognized_text = recognizer.recognize_google(audio_data)
-                st.success(f"✅ Recognized: **{recognized_text}**")
-                use_text_query = recognized_text
-                query = recognized_text
-            except sr.UnknownValueError:
-                st.error("Could not understand audio")
-                use_text_query = query
-            except sr.RequestError as e:
-                st.warning(f"Speech service error: {e}")
-                use_text_query = query
-        except Exception as e:
-            st.warning(f"Audio processing: {e}")
-            use_text_query = query
-    else:
-        use_text_query = query
+query = st.text_area(
+    "Enter your medical question or follow-up:",
+    placeholder="e.g., What are the latest treatments for type 2 diabetes?",
+    height=80,
+    key="query_input"
+)
+use_text_query = query
 
 col1, col2 = st.columns([1, 4])
 with col1:
