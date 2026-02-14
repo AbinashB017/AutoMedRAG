@@ -100,10 +100,10 @@ st.markdown("---")
 # Query input
 st.markdown("### 📋 Ask a Question")
 
-# Create two input methods
-input_tab1, input_tab2 = st.tabs(["⌨️ Type", "🎤 Voice"])
+# Use two columns for text input and alternatives
+col_input, col_audio = st.columns([3, 1])
 
-with input_tab1:
+with col_input:
     query = st.text_area(
         "Enter your medical question or follow-up:",
         placeholder="e.g., What are the latest treatments for type 2 diabetes?",
@@ -112,44 +112,41 @@ with input_tab1:
     )
     use_text_query = query
 
-with input_tab2:
-    st.write("Click the microphone below to record your question:")
-    try:
-        from streamlit_mic_recorder import mic_recorder
-        audio = mic_recorder(
-            start_prompt="🎤 Start Recording",
-            stop_prompt="⏹️ Stop Recording",
-            just_once=False,
-            use_container_width=True,
-            format="wav"
-        )
-        
-        if audio is not None:
-            st.audio(audio["bytes"])
+with col_audio:
+    st.write("**Or upload audio:**")
+    audio_file = st.file_uploader(
+        "Upload WAV/MP3 file",
+        type=["wav", "mp3", "m4a"],
+        label_visibility="collapsed"
+    )
+    
+    if audio_file is not None:
+        try:
+            import speech_recognition as sr
+            from io import BytesIO
             
-            # Convert audio to text
+            recognizer = sr.Recognizer()
+            
+            # Read audio file
+            audio_bytes = audio_file.read()
+            
+            # Convert to speech
             try:
-                import speech_recognition as sr
-                from io import BytesIO
-                
-                recognizer = sr.Recognizer()
-                audio_data = sr.AudioData(audio["bytes"], sample_rate=16000, sample_width=2)
-                
-                try:
-                    query = recognizer.recognize_google(audio_data)
-                    st.success(f"Recognized: **{query}**")
-                    use_text_query = query
-                except sr.UnknownValueError:
-                    st.error("Could not understand audio. Please try again.")
-                    use_text_query = ""
-                except sr.RequestError:
-                    st.error("Speech recognition service unavailable")
-                    use_text_query = ""
-            except ImportError:
-                st.warning("Speech recognition not available. Please use text input.")
-                use_text_query = ""
-    except ImportError:
-        st.info("💬 Mic recorder component not available. Using text input only.")
+                audio_data = sr.AudioData(audio_bytes, sample_rate=16000, sample_width=2)
+                recognized_text = recognizer.recognize_google(audio_data)
+                st.success(f"✅ Recognized: **{recognized_text}**")
+                use_text_query = recognized_text
+                query = recognized_text
+            except sr.UnknownValueError:
+                st.error("Could not understand audio")
+                use_text_query = query
+            except sr.RequestError as e:
+                st.warning(f"Speech service error: {e}")
+                use_text_query = query
+        except Exception as e:
+            st.warning(f"Audio processing: {e}")
+            use_text_query = query
+    else:
         use_text_query = query
 
 col1, col2 = st.columns([1, 4])
