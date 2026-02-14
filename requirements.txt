@@ -1,0 +1,23 @@
+# Core Framework
+fastapi==0.104.1
+uvicorn==0.24.0
+pydantic==2.5.0
+
+# Frontend
+streamlit==1.28.1
+
+# Embeddings & Retrieval
+sentence-transformers==2.2.2
+faiss-cpu>=1.8.0
+rank-bm25==0.2.2
+
+# LLM & NLP
+transformers==4.35.2
+langchain-nvidia-ai-endpoints>=0.0.7
+langchain-core>=0.1.14
+
+# Utilities
+requests==2.31.0
+numpy>=1.24.3
+lxml==4.9.3
+python-dotenv==1.0.0
