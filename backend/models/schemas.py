@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 class ConversationMessage(BaseModel):
     role: str  # "user" or "assistant"
@@ -7,13 +7,13 @@ class ConversationMessage(BaseModel):
 
 class QueryRequest(BaseModel):
     question: str
-    history: List[ConversationMessage] | None = None
+    history: Optional[List[ConversationMessage]] = None
 
 class Paper(BaseModel):
     title: str
     abstract: str
-    hybrid_score: float | None = None
-    rerank_score: float | None = None
+    hybrid_score: Optional[float] = None
+    rerank_score: Optional[float] = None
 
 class QueryResponse(BaseModel):
     answer: str

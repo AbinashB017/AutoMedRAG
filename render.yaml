@@ -3,5 +3,5 @@ services:
     name: automedrag
     runtime: python-3.11
     pythonVersion: 3.11.10
-    buildCommand: pip install --upgrade pip setuptools && pip install -r requirements.txt
+    buildCommand: bash build.sh
     startCommand: uvicorn backend.main:app --host 0.0.0.0 --port 8000
