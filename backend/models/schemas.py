@@ -8,6 +8,9 @@ class ConversationMessage(BaseModel):
 class QueryRequest(BaseModel):
     question: str
     history: List[ConversationMessage] | None = None
+
+class Paper(BaseModel):
+    title: str
     abstract: str
     hybrid_score: float | None = None
     rerank_score: float | None = None
