@@ -34,9 +34,26 @@ async def ask_question(request: QueryRequest):
     - Performs hybrid retrieval (semantic + keyword)
     - Re-ranks results for relevance
     - Generates an evidence-based answer
+    - Supports conversation history for contextual understanding
     """
     try:
-        # Fetch papers from PubMed
+        # Build context from conversation history
+        context = ""
+        if request.history and len(request.history) > 0:
+            # Get last 2 exchanges for context
+            recent_history = request.history[-4:]  # Last 2 Q&A pairs
+            for msg in recent_history:
+                if msg.role == "user":
+                    context += f"Previous question: {msg.content}\n"
+                else:
+                    context += f"Previous answer: {msg.content}\n"
+        
+        # Enhance the question with context if available
+        enhanced_question = request.question
+        if context:
+            enhanced_question = f"Context: {context}\nNew question: {request.question}"
+        
+        # Fetch papers from PubMed (use original question for API)
         papers = fetch_pubmed(request.question)
         
         if not papers:
@@ -45,8 +62,8 @@ async def ask_question(request: QueryRequest):
                 papers=[]
             )
         
-        # Hybrid retrieval
-        retrieved = hybrid_retrieve(request.question, papers)
+        # Hybrid retrieval (use enhanced question for better matching)
+        retrieved = hybrid_retrieve(enhanced_question, papers)
         
         if not retrieved:
             return QueryResponse(
@@ -54,11 +71,11 @@ async def ask_question(request: QueryRequest):
                 papers=[]
             )
         
-        # Re-rank papers
-        top_papers = rerank(request.question, retrieved)
+        # Re-rank papers (use enhanced question)
+        top_papers = rerank(enhanced_question, retrieved)
         
-        # Generate answer using LLM
-        answer = generate_answer(request.question, top_papers)
+        # Generate answer using LLM (use original question but with context awareness)
+        answer = generate_answer(enhanced_question, top_papers)
         
         return QueryResponse(
             answer=answer,
@@ -69,3 +86,4 @@ async def ask_question(request: QueryRequest):
             answer=f"Error processing query: {str(e)}",
             papers=[]
         )
+
