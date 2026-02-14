@@ -71,28 +71,25 @@ st.title("🏥 AutoMedRAG")
 st.subheader("Clinical Evidence Assistant")
 st.markdown("*Powered by PubMed + AI + Hybrid Search*")
 
-# Display chat history
-st.markdown("### 💬 Conversation")
-chat_container = st.container(border=True)
+st.write(f"**Debug:** {len(st.session_state.messages)} messages in history")
 
-with chat_container:
+# Display chat history
+if st.session_state.messages:
+    st.markdown("### 💬 Conversation History")
     for message in st.session_state.messages:
         if message["role"] == "user":
             with st.chat_message("user", avatar="🧑‍⚕️"):
-                st.write(message["content"])
+                st.write(f"**Q:** {message['content']}")
         else:
             with st.chat_message("assistant", avatar="🤖"):
-                st.write(message["answer"])
+                st.write(f"**A:** {message['answer']}")
                 if message.get("papers"):
-                    with st.expander("📚 View Source Papers"):
+                    with st.expander(f"📚 Papers ({len(message['papers'])} found)"):
                         for idx, paper in enumerate(message["papers"], 1):
-                            with st.expander(f"**Paper {idx}:** {paper['title']}", expanded=False):
-                                st.markdown(f"**Abstract:**\n{paper['abstract']}")
-                                cols = st.columns(3)
-                                if paper.get("hybrid_score") is not None:
-                                    cols[0].metric("Hybrid Score", f"{paper['hybrid_score']:.3f}")
-                                if paper.get("rerank_score") is not None:
-                                    cols[1].metric("Rerank Score", f"{paper['rerank_score']:.3f}")
+                            st.write(f"**{idx}. {paper['title']}**")
+                            st.caption(paper['abstract'][:200] + "...")
+else:
+    st.info("💭 No conversation history yet. Ask a question to start!")
 
 st.markdown("---")
 
