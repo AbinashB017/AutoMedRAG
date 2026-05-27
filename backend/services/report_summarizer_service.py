@@ -1,90 +1,104 @@
 """
 Report Summarization Service - AI-powered report analysis
-Uses LLM to create summaries and explanations
+Uses the NVIDIA LLM (via query_llm) to create summaries and explanations.
 """
-from backend.services.llm_service import generate_answer, answer_report_question
+from backend.services.llm_service import query_llm, answer_report_question
 
 
 def summarize_report(report_text: str) -> dict:
     """
-    Summarize a medical report using AI
-    Returns: summary, key_findings, recommendations
+    Summarize a medical report using AI.
+    Returns a dict with 'summary' and 'full_text'.
     """
-    
-    # Create a summarization prompt
-    summary_prompt = f"""Analyze this medical report and provide:
-1. A brief 2-3 sentence summary
-2. Key findings (list main diagnoses, test results, concerns)
-3. Recommended next steps
-4. Any important alerts or critical values
+    truncated = report_text[:5000]  # Limit to first 5000 chars to keep prompt manageable
+
+    prompt = f"""You are a clinical medical assistant.
+Analyze the following medical report and provide a structured response with these sections:
+
+1. SUMMARY — A brief 2-3 sentence overview of the report.
+2. KEY FINDINGS — List the main diagnoses, important test results, and clinical concerns.
+3. NEXT STEPS — Recommended follow-up actions for the patient.
+4. ALERTS — Any critical values or urgent items that need immediate attention.
 
 Medical Report:
-{report_text[:5000]}  # Limit to first 5000 chars to save tokens
+{truncated}
 
-Provide structured response with clear sections."""
-    
-    summary_response = answer_report_question(summary_prompt, report_text)
-    
+Provide a clear, patient-friendly response."""
+
+    result = query_llm(prompt)
+
+    if not result:
+        # Fallback: basic extraction if LLM unavailable
+        result = (
+            "AI summarization is currently unavailable (LLM not configured).\n"
+            "Please ensure NVIDIA_API_KEY is set and required packages are installed.\n\n"
+            f"Report preview:\n{report_text[:500]}..."
+        )
+
     return {
-        "summary": summary_response,
+        "summary": result,
         "full_text": report_text
     }
 
 
 def explain_medical_term(report_text: str, term: str) -> str:
     """
-    Explain a medical term found in the report using LLM
+    Explain a medical term found in the report in simple language.
     """
-    
-    explanation_prompt = f"""Based on this medical report, explain what '{term}' means in simple language.
-Provide a clear explanation that a patient can understand.
+    truncated = report_text[:4000]
+
+    prompt = f"""You are a medical assistant helping a patient understand their report.
+Explain the medical term '{term}' in simple, easy-to-understand language.
+Use context from the medical report below if it helps clarify the meaning.
+Keep the explanation under 150 words and avoid jargon.
 
 Medical Report:
-{report_text}
+{truncated}
 
-Explanation of '{term}'."""
-    
-    explanation = answer_report_question(explanation_prompt, report_text)
-    return explanation
+Explanation of '{term}':"""
+
+    result = query_llm(prompt)
+
+    if not result:
+        return (
+            f"Unable to explain '{term}' — LLM is currently unavailable.\n"
+            "Please ensure NVIDIA_API_KEY is configured and required packages are installed."
+        )
+
+    return result
 
 
-def answer_report_question(question: str, report_text: str) -> str:
+def answer_report_question_service(question: str, report_text: str) -> str:
     """
-    Answer a user question about their medical report
+    Answer a user question about their medical report.
+    Delegates to llm_service.answer_report_question which tries LLM first,
+    then falls back to keyword extraction.
     """
-    
-    qa_prompt = f"""Based on this medical report, please answer the following question:
-
-Question: {question}
-
-Medical Report:
-{report_text}
-
-Answer in clear, patient-friendly language."""
-    
-    # Use the new answer_report_question function from llm_service
-    from backend.services.llm_service import answer_report_question as llm_answer
-    answer = llm_answer(question, report_text)
-    return answer
+    return answer_report_question(question, report_text)
 
 
 def get_action_items(report_text: str) -> list:
     """
-    Extract actionable items from the report
+    Extract actionable items from the report.
     """
-    
-    action_prompt = f"""From this medical report, extract all action items for the patient.
+    truncated = report_text[:4000]
+
+    prompt = f"""From this medical report, extract all action items for the patient.
 List things like:
-- Medications to take
+- Medications to take (name, dose, frequency)
 - Follow-up appointments needed
-- Tests to get done
-- Lifestyle changes
-- Warning signs to watch for
+- Tests or lab work to get done
+- Lifestyle changes recommended
+- Warning signs to watch for and when to seek urgent care
 
 Medical Report:
-{report_text}
+{truncated}
 
-List action items in bullet points."""
-    
-    action_items = answer_report_question(action_prompt, report_text)
-    return action_items.split('\n')
+List action items in bullet points:"""
+
+    result = query_llm(prompt)
+
+    if not result:
+        return ["Action item extraction unavailable — LLM not configured."]
+
+    return [line for line in result.split("\n") if line.strip()]

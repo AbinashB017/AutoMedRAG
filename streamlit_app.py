@@ -210,7 +210,7 @@ with tab1:
                 response = requests.post(
                     api_url,
                     json=payload,
-                    timeout=60
+                    timeout=120
                 )
 
                 if response.status_code == 200:
@@ -286,7 +286,7 @@ with tab2:
                 response = requests.post(
                     api_url,
                     json=payload,
-                    timeout=60
+                    timeout=120
                 )
 
                 if response.status_code == 200:
@@ -335,7 +335,7 @@ if uploaded_file is not None:
             response = requests.post(
                 f"{API_BASE_URL}/summarize-report",
                 files=files,
-                timeout=60
+                timeout=120
             )
             
             if response.status_code == 200:

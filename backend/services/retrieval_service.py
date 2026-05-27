@@ -116,7 +116,7 @@ def hybrid_retrieve(query, papers, top_k=10):
             doc_embeddings = embed_model.encode(abstracts)
             query_embedding = embed_model.encode([query])
 
-            dimension = len(doc_embeddings[0]) if doc_embeddings else 768
+            dimension = doc_embeddings.shape[1] if doc_embeddings is not None and len(doc_embeddings) > 0 else 768
             index = faiss.IndexFlatL2(dimension)
             
             # Convert to numpy arrays for FAISS
@@ -126,15 +126,27 @@ def hybrid_retrieve(query, papers, top_k=10):
             index.add(doc_array)
 
             D, I = index.search(query_array, len(abstracts))
-            dense_scores = 1 / (1 + D[0])
+
+            # Re-map FAISS scores back to original document order.
+            # FAISS returns results sorted by distance — I[0] holds the
+            # original document indices, D[0] holds the distances.
+            dense_scores = np.zeros(len(abstracts), dtype=np.float32)
+            for pos in range(len(I[0])):
+                doc_idx = int(I[0][pos])
+                if doc_idx >= 0:  # FAISS uses -1 for missing slots
+                    dense_scores[doc_idx] = float(1.0 / (1.0 + D[0][pos]))
 
             tokenized = [doc.split() for doc in abstracts]
             bm25 = BM25Okapi(tokenized)
             bm25_scores = bm25.get_scores(query.split())
             bm25_scores = np.array(bm25_scores, dtype=np.float32)
 
-            dense_scores = dense_scores / (np.max(dense_scores) + 1e-8)
-            bm25_scores = bm25_scores / (np.max(bm25_scores) + 1e-8)
+            max_dense = np.max(dense_scores)
+            max_bm25 = np.max(bm25_scores)
+            if max_dense > 0:
+                dense_scores = dense_scores / (max_dense + 1e-8)
+            if max_bm25 > 0:
+                bm25_scores = bm25_scores / (max_bm25 + 1e-8)
 
             final_scores = 0.5 * dense_scores + 0.5 * bm25_scores
             ranked_indices = np.argsort(final_scores)[::-1][:top_k]

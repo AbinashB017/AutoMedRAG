@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 # Load .env file
 load_dotenv()
 
-NVIDIA_MODEL = os.getenv("NVIDIA_MODEL", "meta/llama3-70b-instruct")
+NVIDIA_MODEL = os.getenv("NVIDIA_MODEL", "meta/llama-3.1-70b-instruct")
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", "")
 
 # Warn if API key is not set, but don't crash

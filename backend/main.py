@@ -6,7 +6,7 @@ from backend.services.retrieval_service import hybrid_retrieve
 from backend.services.reranker_service import rerank
 from backend.services.llm_service import generate_answer
 from backend.services.report_parser_service import extract_report_text, extract_key_sections
-from backend.services.report_summarizer_service import summarize_report, answer_report_question, explain_medical_term
+from backend.services.report_summarizer_service import summarize_report, answer_report_question_service, explain_medical_term
 
 app = FastAPI(title="AutoMedRAG API", description="Medical Document Retrieval and Analysis System")
 
@@ -55,28 +55,30 @@ async def ask_question(request: QueryRequest):
         if context:
             enhanced_question = f"Context: {context}\nNew question: {request.question}"
         
-        # Fetch papers from PubMed (use original question for API)
+        # Fetch papers from PubMed using original question for precise API search
         papers = fetch_pubmed(request.question)
         
         if not papers:
             return QueryResponse(
-                answer="No relevant papers found for your query.",
+                answer="No relevant papers were found on PubMed for your query. Please try rephrasing or use more specific medical terminology.",
                 papers=[]
             )
         
-        # Hybrid retrieval (use enhanced question for better matching)
-        retrieved = hybrid_retrieve(enhanced_question, papers)
+        # Hybrid retrieval — use original question so semantic search is not
+        # polluted by conversation history text
+        retrieved = hybrid_retrieve(request.question, papers)
         
         if not retrieved:
             return QueryResponse(
-                answer="No relevant results after retrieval.",
+                answer="Papers were found but none matched your query closely enough after filtering. Please try rephrasing.",
                 papers=[]
             )
         
-        # Re-rank papers (use enhanced question)
-        top_papers = rerank(enhanced_question, retrieved)
+        # Re-rank papers using the clean original question
+        top_papers = rerank(request.question, retrieved)
         
-        # Generate answer using LLM (use original question but with context awareness)
+        # Generate LLM answer using the enhanced question (includes conversation
+        # context) so the model can give contextually relevant responses
         answer = generate_answer(enhanced_question, top_papers)
         
         return QueryResponse(
@@ -131,7 +133,7 @@ async def ask_question_about_report(request: ReportQuestionRequest):
     The AI will answer based on the report content.
     """
     try:
-        answer = answer_report_question(request.report_text, request.question)
+        answer = answer_report_question_service(request.question, request.report_text)
         
         return ReportQuestionResponse(
             question=request.question,
