@@ -1,9 +1,15 @@
+import os
+
 # Try to import ML packages with fallback
 try:
+    if os.environ.get("RENDER"):
+        raise ImportError("Running on Render free tier - disabling heavy cross-encoder to save RAM")
+        
     from sentence_transformers import CrossEncoder
     cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
     HAS_CROSS_ENCODER = True
-except ImportError:
+except ImportError as e:
+    print(f"Cross-encoder disabled: {e}")
     HAS_CROSS_ENCODER = False
     cross_encoder = None
 

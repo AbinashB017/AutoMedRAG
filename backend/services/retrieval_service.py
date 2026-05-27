@@ -11,11 +11,17 @@ except ImportError:
     HAS_ML_PACKAGES = False
     np = None
 
+import os
+
 try:
+    if os.environ.get("RENDER"):
+        raise ImportError("Running on Render free tier - disabling heavy sentence transformers to save RAM")
+        
     from sentence_transformers import SentenceTransformer
     embed_model = SentenceTransformer("all-MiniLM-L6-v2")
     HAS_EMBEDDINGS = True
-except ImportError:
+except ImportError as e:
+    print(f"Embeddings disabled: {e}")
     HAS_EMBEDDINGS = False
     embed_model = None
 
